@@ -1,0 +1,57 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../controllers/user_controller.dart';
+import '../models/user_model.dart';
+
+class EditUserScreen extends StatelessWidget {
+  final UserController userController = Get.find();
+  final User user;
+
+  EditUserScreen({required this.user});
+
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+
+  @override
+  void initState() {}
+
+  @override
+  Widget build(BuildContext context) {
+    firstNameController.text = user.firstName;
+    lastNameController.text = user.lastName;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Edit User'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: firstNameController,
+              decoration: InputDecoration(labelText: 'First Name'),
+            ),
+            TextField(
+              controller: lastNameController,
+              decoration: InputDecoration(labelText: 'Last Name'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () async {
+                await userController.updateUser(
+                  user.id,
+                  firstNameController.text,
+                  lastNameController.text,
+                );
+                Get.back();
+              },
+              child: Text('Update User'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
