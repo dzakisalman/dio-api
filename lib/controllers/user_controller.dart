@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 import '../models/user_model.dart';
 import '../services/api_service.dart';
+import 'package:dio_api/app_colors.dart';
 
 class UserController extends GetxController {
   List<User> users = [];
@@ -87,8 +88,7 @@ class UserController extends GetxController {
     update();
 
     try {
-      final updatedUser =
-          await ApiService().updateUser(id, firstName, lastName);
+      final updatedUser = await ApiService().updateUser(id, firstName, lastName);
       final index = users.indexWhere((user) => user.id == id);
       if (index != -1) {
         users[index] = updatedUser;
@@ -135,42 +135,166 @@ class UserController extends GetxController {
   }
 
   Future<void> openFilterDialog() async {
-    final List<User> selectedUsers = filteredUsers.toList();
+    List<User> tempSelectedUsers = List<User>.from(filteredUsers);
+    List<User> filteredList = List<User>.from(users);
+    TextEditingController searchController = TextEditingController();
 
-    await FilterListDialog.display<User>(
-      Get.context!,
-      listData: users,
-      selectedListData: selectedUsers,
-      choiceChipLabel: (user) =>
-          '${user?.firstName ?? "Unknown"} ${user?.lastName ?? ""}',
-      validateSelectedItem: (list, user) => list?.contains(user) ?? false,
-      onItemSearch: (user, query) {
-        return (user?.firstName?.toLowerCase().contains(query.toLowerCase()) ??
-                false) ||
-            (user?.lastName?.toLowerCase().contains(query.toLowerCase()) ??
-                false);
-      },
-      onApplyButtonClick: (list) {
-        if (list != null) {
-          filteredUsers = list;
-          update();
-        }
-        Get.back();
-      },
-    );
+    await showModalBottomSheet(
+      context: Get.context!,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      backgroundColor: AppColors.background,
+      builder: (context) {
+      return FractionallySizedBox(
+        heightFactor: 0.5, // Hanya setengah layar
+        child: StatefulBuilder(
+          builder: (context, setState) {
+            void filterSearch(String query) {
+              setState(() {
+                filteredList = users
+                    .where((user) =>
+                user.firstName.toLowerCase().contains(query.toLowerCase()) ||
+                    user.lastName.toLowerCase().contains(query.toLowerCase()))
+                    .toList();
+              });
+            }
 
-    Get.defaultDialog(
-      title: "Filter Applied",
-      middleText: "Click Reset to show all users again.",
-      textConfirm: "Reset",
-      onConfirm: () {
-        _updateFilteredUsers();
-        update();
-        Get.back();
+            return Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Column(
+                children: [
+                  Container(
+                    width: 50,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: AppColors.textSecondary.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    "Filter Users",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: searchController,
+                    onChanged: filterSearch,
+                    decoration: InputDecoration(
+                      hintText: "Search user...",
+                      prefixIcon: Icon(Icons.search, color: AppColors.accent),
+                      filled: true,
+                      fillColor: AppColors.surface.withOpacity(0.2),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: AppColors.surface),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: AppColors.surface),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: AppColors.accent, width: 2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Expanded(
+                    child: filteredList.isEmpty
+                        ? Center(
+                      child: Text(
+                        "No users found",
+                        style: TextStyle(color: AppColors.textSecondary),
+                      ),
+                    )
+                        : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: filteredList.length,
+                      itemBuilder: (context, index) {
+                        final user = filteredList[index];
+                        final isSelected = tempSelectedUsers.contains(user);
+
+                        return CheckboxListTile(
+                          title: Text(
+                            '${user.firstName} ${user.lastName}',
+                            style: TextStyle(color: AppColors.textPrimary),
+                          ),
+                          value: isSelected,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              if (value == true) {
+                                tempSelectedUsers.add(user);
+                              } else {
+                                tempSelectedUsers.remove(user);
+                              }
+                            });
+                          },
+                          activeColor: AppColors.accent,
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            filteredUsers = List<User>.from(tempSelectedUsers);
+                            update();
+                            Get.back();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.accent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Text("Apply Filter",
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _updateFilteredUsers(); // Reset filter
+                            searchController.clear();
+                            update();
+                            Get.back();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.redAccent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Text("Reset",
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                ],
+              ),
+            );
+          },
+        ),
+        );
       },
-      textCancel: "Close",
     );
   }
+
+
+
 
   void _updateFilteredUsers() {
     filteredUsers = List.from(users);
