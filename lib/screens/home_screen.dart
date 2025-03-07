@@ -1,10 +1,11 @@
 import 'package:dio_api/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../app_colors.dart';
 import '../controllers/user_controller.dart';
 import 'add_user_screen.dart';
 import 'edit_user_screen.dart';
-import '../app_colors.dart';
 
 class HomeScreen extends StatelessWidget {
   final UserController userController = Get.find<UserController>();
@@ -56,8 +57,8 @@ class HomeScreen extends StatelessWidget {
                 ),
                 margin: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                      vertical: 10, horizontal: 16),
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                   leading: CircleAvatar(
                     radius: 30,
                     backgroundImage: NetworkImage(user.avatar),
@@ -119,14 +120,16 @@ class HomeScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
+            child: Text('Cancel',
+                style: TextStyle(color: AppColors.textSecondary)),
           ),
           TextButton(
             onPressed: () {
               userController.deleteUser(userId);
               Get.back();
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.redAccent)),
+            child:
+                const Text('Delete', style: TextStyle(color: Colors.redAccent)),
           ),
         ],
       ),

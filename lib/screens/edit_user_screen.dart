@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../app_colors.dart';
 import '../controllers/user_controller.dart';
 import '../models/user_model.dart';
-import '../app_colors.dart';
 
 class EditUserScreen extends StatefulWidget {
   final User user;
@@ -156,28 +157,32 @@ class _EditUserScreenState extends State<EditUserScreen> {
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-        onPressed: controller.isLoading ? null : () => _handleSubmit(controller),
+        onPressed:
+            controller.isLoading ? null : () => _handleSubmit(controller),
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
           backgroundColor:
-          controller.isLoading ? Colors.grey[600] : AppColors.accent,
+              controller.isLoading ? Colors.grey[600] : AppColors.accent,
           elevation: controller.isLoading ? 0 : 2,
         ),
         child: controller.isLoading
             ? const SizedBox(
-          height: 24,
-          width: 24,
-          child: CircularProgressIndicator(
-            color: Colors.white,
-            strokeWidth: 2.5,
-          ),
-        )
+                height: 24,
+                width: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2.5,
+                ),
+              )
             : const Text(
-          'Update User',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
-        ),
+                'Update User',
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white),
+              ),
       ),
     );
   }
@@ -208,24 +213,28 @@ class _EditUserScreenState extends State<EditUserScreen> {
       AlertDialog(
         title: Text(
           'Delete User',
-          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+          style: TextStyle(
+              fontWeight: FontWeight.bold, color: AppColors.textPrimary),
         ),
         content: const Text('Are you sure you want to delete this user?'),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
+            child: Text('Cancel',
+                style: TextStyle(color: AppColors.textSecondary)),
           ),
           GetBuilder<UserController>(
             builder: (controller) => TextButton(
               onPressed: controller.isLoading
                   ? null
                   : () {
-                controller.deleteUser(widget.user.id);
-                Get.back();
-                Get.back();
-              },
-              child: Text('Delete', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                      controller.deleteUser(widget.user.id);
+                      Get.back();
+                      Get.back();
+                    },
+              child: Text('Delete',
+                  style: TextStyle(
+                      color: Colors.redAccent, fontWeight: FontWeight.bold)),
             ),
           ),
         ],

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/auth_controller.dart';
+
 import '../app_colors.dart'; // Import AppColors
+import '../controllers/auth_controller.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -74,7 +75,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: BoxDecoration(
                     color: AppColors.surface.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.surface.withOpacity(0.3)),
+                    border:
+                        Border.all(color: AppColors.surface.withOpacity(0.3)),
                   ),
                   child: Form(
                     key: _formKey,
@@ -84,14 +86,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           controller: _emailController,
                           decoration: InputDecoration(
                             labelText: 'Email',
-                            prefixIcon: Icon(Icons.email, color: AppColors.accent),
+                            prefixIcon:
+                                Icon(Icons.email, color: AppColors.accent),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(color: AppColors.surface),
                             ),
                             filled: true,
                             fillColor: AppColors.surface.withOpacity(0.2),
-                            labelStyle: TextStyle(color: AppColors.textSecondary),
+                            labelStyle:
+                                TextStyle(color: AppColors.textSecondary),
                           ),
                           keyboardType: TextInputType.emailAddress,
                           style: TextStyle(color: AppColors.textPrimary),
@@ -108,10 +112,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           obscureText: !_isPasswordVisible,
                           decoration: InputDecoration(
                             labelText: 'Password',
-                            prefixIcon: Icon(Icons.lock, color: AppColors.accent),
+                            prefixIcon:
+                                Icon(Icons.lock, color: AppColors.accent),
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                _isPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
                                 color: AppColors.accent,
                               ),
                               onPressed: () {
@@ -126,7 +133,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             filled: true,
                             fillColor: AppColors.surface.withOpacity(0.2),
-                            labelStyle: TextStyle(color: AppColors.textSecondary),
+                            labelStyle:
+                                TextStyle(color: AppColors.textSecondary),
                           ),
                           style: TextStyle(color: AppColors.textPrimary),
                           validator: (value) {
@@ -142,15 +150,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           obscureText: !_isConfirmPasswordVisible,
                           decoration: InputDecoration(
                             labelText: 'Confirm Password',
-                            prefixIcon: Icon(Icons.lock, color: AppColors.accent),
+                            prefixIcon:
+                                Icon(Icons.lock, color: AppColors.accent),
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                _isConfirmPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
                                 color: AppColors.accent,
                               ),
                               onPressed: () {
                                 setState(() {
-                                  _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                                  _isConfirmPasswordVisible =
+                                      !_isConfirmPasswordVisible;
                                 });
                               },
                             ),
@@ -160,7 +172,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             filled: true,
                             fillColor: AppColors.surface.withOpacity(0.2),
-                            labelStyle: TextStyle(color: AppColors.textSecondary),
+                            labelStyle:
+                                TextStyle(color: AppColors.textSecondary),
                           ),
                           style: TextStyle(color: AppColors.textPrimary),
                           validator: (value) {
@@ -175,37 +188,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 16),
                         Obx(() => SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.secondary,
-                              foregroundColor: AppColors.textPrimary,
-                              padding: const EdgeInsets.all(14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.secondary,
+                                  foregroundColor: AppColors.textPrimary,
+                                  padding: const EdgeInsets.all(14),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                onPressed: _authController.isLoading
+                                    ? null
+                                    : () async {
+                                        if (_formKey.currentState!.validate()) {
+                                          final success =
+                                              await _authController.register(
+                                            _emailController.text,
+                                            _passwordController.text,
+                                          );
+                                          if (success) {
+                                            Get.offNamed('/login');
+                                          }
+                                        }
+                                      },
+                                child: _authController.isLoading
+                                    ? const CircularProgressIndicator()
+                                    : const Text(
+                                        'Register',
+                                        style: TextStyle(fontSize: 18),
+                                      ),
                               ),
-                            ),
-                            onPressed: _authController.isLoading
-                                ? null
-                                : () async {
-                              if (_formKey.currentState!.validate()) {
-                                final success = await _authController.register(
-                                  _emailController.text,
-                                  _passwordController.text,
-                                );
-                                if (success) {
-                                  Get.offNamed('/login');
-                                }
-                              }
-                            },
-                            child: _authController.isLoading
-                                ? const CircularProgressIndicator()
-                                : const Text(
-                              'Register',
-                              style: TextStyle(fontSize: 18),
-                            ),
-                          ),
-                        )),
+                            )),
                       ],
                     ),
                   ),

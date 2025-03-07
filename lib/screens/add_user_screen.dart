@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/user_controller.dart';
+
 import '../app_colors.dart';
+import '../controllers/user_controller.dart';
 
 class AddUserScreen extends StatelessWidget {
   final TextEditingController firstNameController = TextEditingController();
@@ -62,17 +63,17 @@ class AddUserScreen extends StatelessWidget {
                   ),
                   child: controller.isLoading
                       ? const SizedBox(
-                    height: 24,
-                    width: 24,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2.5,
-                    ),
-                  )
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
+                        )
                       : const Text(
-                    'Create User',
-                    style: TextStyle(fontSize: 18, color: Colors.white),
-                  ),
+                          'Create User',
+                          style: TextStyle(fontSize: 18, color: Colors.white),
+                        ),
                 ),
               ),
             ],

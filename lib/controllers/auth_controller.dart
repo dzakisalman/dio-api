@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+
 import '../services/auth_service.dart';
 
 class AuthController extends GetxController {
@@ -7,6 +8,7 @@ class AuthController extends GetxController {
   final _error = Rxn<String>();
 
   bool get isLoading => _isLoading.value;
+
   String? get error => _error.value;
 
   Future<bool> login(String email, String password) async {
@@ -42,4 +44,4 @@ class AuthController extends GetxController {
   void clearError() {
     _error.value = null;
   }
-} 
+}
