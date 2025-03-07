@@ -16,6 +16,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
+  // Variabel untuk mengelola visibilitas password
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -99,9 +103,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: _passwordController,
+                          obscureText: !_isPasswordVisible,
                           decoration: InputDecoration(
                             labelText: 'Password',
                             prefixIcon: Icon(Icons.lock, color: AppColors.accent),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                color: AppColors.accent,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isPasswordVisible = !_isPasswordVisible;
+                                });
+                              },
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(color: AppColors.surface),
@@ -110,7 +126,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             fillColor: AppColors.surface.withOpacity(0.2),
                             labelStyle: TextStyle(color: AppColors.textSecondary),
                           ),
-                          obscureText: true,
                           style: TextStyle(color: AppColors.textPrimary),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -122,9 +137,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: _confirmPasswordController,
+                          obscureText: !_isConfirmPasswordVisible,
                           decoration: InputDecoration(
                             labelText: 'Confirm Password',
                             prefixIcon: Icon(Icons.lock_outline, color: AppColors.accent),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                color: AppColors.accent,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                                });
+                              },
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(color: AppColors.surface),
@@ -133,7 +160,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             fillColor: AppColors.surface.withOpacity(0.2),
                             labelStyle: TextStyle(color: AppColors.textSecondary),
                           ),
-                          obscureText: true,
                           style: TextStyle(color: AppColors.textPrimary),
                           validator: (value) {
                             if (value == null || value.isEmpty) {

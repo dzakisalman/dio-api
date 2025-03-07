@@ -15,6 +15,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  // Variabel untuk mengelola visibilitas password
+  bool _isPasswordVisible = false;
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -25,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background, // Warna latar belakang
+      backgroundColor: AppColors.background,
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
@@ -97,9 +100,21 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: _passwordController,
+                          obscureText: !_isPasswordVisible,
                           decoration: InputDecoration(
                             labelText: 'Password',
                             prefixIcon: Icon(Icons.lock, color: AppColors.accent),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                color: AppColors.accent,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isPasswordVisible = !_isPasswordVisible;
+                                });
+                              },
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(color: AppColors.surface),
@@ -108,7 +123,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             fillColor: AppColors.surface.withOpacity(0.2),
                             labelStyle: TextStyle(color: AppColors.textSecondary),
                           ),
-                          obscureText: true,
                           style: TextStyle(color: AppColors.textPrimary),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -160,19 +174,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // Forgot Password & Register
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextButton(
-                      onPressed: () {
-                        // TODO: Tambahkan navigasi ke halaman lupa password
-                      },
-                      child: Text(
-                        "Forgot Password?",
-                        style: TextStyle(color: AppColors.accent),
-                      ),
-                    ),
+                    // TextButton(
+                    //   onPressed: () {
+                    //   },
+                    //   child: Text(
+                    //     "Forgot Password?",
+                    //     style: TextStyle(color: AppColors.accent),
+                    //   ),
+                    // ),
                     TextButton(
                       onPressed: () {
                         Navigator.pushNamed(context, '/register');
