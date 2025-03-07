@@ -91,6 +91,7 @@ class AddUserScreen extends StatelessWidget {
   }) {
     return TextField(
       controller: controller,
+      style: TextStyle(color: AppColors.textPrimary),
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(color: AppColors.textSecondary),

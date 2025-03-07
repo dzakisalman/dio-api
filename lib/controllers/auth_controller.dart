@@ -4,44 +4,51 @@ import '../services/auth_service.dart';
 
 class AuthController extends GetxController {
   final AuthService _authService = AuthService();
-  final _isLoading = false.obs;
-  final _error = Rxn<String>();
+  bool _isLoading = false;
+  String? _error;
 
-  bool get isLoading => _isLoading.value;
+  bool get isLoading => _isLoading;
 
-  String? get error => _error.value;
+  String? get error => _error;
 
   Future<bool> login(String email, String password) async {
-    _isLoading.value = true;
-    _error.value = null;
+    _isLoading = true;
+    _error = null;
+    update();
 
     try {
       final response = await _authService.login(email, password);
-      _isLoading.value = false;
+      _isLoading = false;
+      update();
       return true;
     } catch (e) {
-      _error.value = e.toString();
-      _isLoading.value = false;
+      _error = e.toString();
+      _isLoading = false;
+      update();
       return false;
     }
   }
 
   Future<bool> register(String email, String password) async {
-    _isLoading.value = true;
-    _error.value = null;
+    _isLoading = true;
+    _error = null;
+    update();
 
     try {
       final response = await _authService.register(email, password);
-      _isLoading.value = false;
+      _isLoading = false;
+      update();
       return true;
     } catch (e) {
-      _error.value = e.toString();
-      _isLoading.value = false;
+      _error = e.toString();
+      _isLoading = false;
+      update();
       return false;
     }
   }
 
   void clearError() {
-    _error.value = null;
+    _error = null;
+    update();
   }
 }

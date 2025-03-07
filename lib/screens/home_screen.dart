@@ -1,4 +1,3 @@
-import 'package:dio_api/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -9,6 +8,11 @@ import 'edit_user_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final UserController userController = Get.find<UserController>();
+
+  void _handleLogout() {
+    userController.reset();
+    Get.offAllNamed('/login');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +29,8 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: AppColors.primary.withOpacity(0.9),
         elevation: 4,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.accent),
-          onPressed: () => Get.to(() => LoginScreen()),
+          icon: Icon(Icons.logout, color: AppColors.accent),
+          onPressed: _handleLogout,
         ),
         actions: [
           IconButton(
@@ -43,67 +47,104 @@ class HomeScreen extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: controller.filteredUsers.length,
-            itemBuilder: (context, index) {
-              final user = controller.filteredUsers[index];
-
-              return Card(
-                color: AppColors.surface.withOpacity(0.9),
-                elevation: 6,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+          return Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: controller.filteredUsers.length,
+                  itemBuilder: (context, index) {
+                    final user = controller.filteredUsers[index];
+                    return Card(
+                      color: AppColors.surface.withOpacity(0.9),
+                      elevation: 6,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 16),
+                        leading: CircleAvatar(
+                          radius: 30,
+                          backgroundImage: NetworkImage(user.avatar),
+                          backgroundColor: AppColors.accent.withOpacity(0.2),
+                        ),
+                        title: Text(
+                          '${user.firstName} ${user.lastName}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        subtitle: Text(
+                          user.email,
+                          style: TextStyle(color: AppColors.textSecondary),
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.edit, color: AppColors.accent),
+                              onPressed: () {
+                                Get.to(() => EditUserScreen(user: user));
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete,
+                                  color: Colors.redAccent),
+                              onPressed: () {
+                                showDeleteConfirmation(user.id);
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                child: ListTile(
-                  contentPadding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                  leading: CircleAvatar(
-                    radius: 30,
-                    backgroundImage: NetworkImage(user.avatar),
-                    backgroundColor: AppColors.accent.withOpacity(0.2),
-                  ),
-                  title: Text(
-                    '${user.firstName} ${user.lastName}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+              ),
+              if (controller.hasMoreData)
+                Padding(
+                  padding: const EdgeInsets.all(50.0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.accent,
+                      minimumSize: const Size(200, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
-                  ),
-                  subtitle: Text(
-                    user.email,
-                    style: TextStyle(color: AppColors.textSecondary),
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.edit, color: AppColors.accent),
-                        onPressed: () {
-                          Get.to(() => EditUserScreen(user: user));
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.redAccent),
-                        onPressed: () {
-                          showDeleteConfirmation(user.id);
-                        },
-                      ),
-                    ],
+                    onPressed: controller.isLoadingMore
+                        ? null
+                        : () => controller.loadMore(),
+                    child: controller.isLoadingMore
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : const Text(
+                            'Load More',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
                 ),
-              );
-            },
+            ],
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Get.to(() => AddUserScreen());
-        },
+        onPressed: () => Get.to(() => AddUserScreen()),
         backgroundColor: AppColors.accent,
-        child: const Icon(Icons.add, color: Colors.white, size: 28),
+        child: const Icon(Icons.add),
       ),
     );
   }

@@ -142,39 +142,41 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                         const SizedBox(height: 16),
-                        Obx(() => SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.secondary,
-                                  foregroundColor: AppColors.textPrimary,
-                                  padding: const EdgeInsets.all(14),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
+                        GetBuilder<AuthController>(
+                          builder: (controller) => SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.secondary,
+                                foregroundColor: AppColors.textPrimary,
+                                padding: const EdgeInsets.all(14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                onPressed: _authController.isLoading
-                                    ? null
-                                    : () async {
-                                        if (_formKey.currentState!.validate()) {
-                                          final success =
-                                              await _authController.login(
-                                            _emailController.text,
-                                            _passwordController.text,
-                                          );
-                                          if (success) {
-                                            Get.offNamed('/home');
-                                          }
-                                        }
-                                      },
-                                child: _authController.isLoading
-                                    ? const CircularProgressIndicator()
-                                    : const Text(
-                                        'Login',
-                                        style: TextStyle(fontSize: 18),
-                                      ),
                               ),
-                            )),
+                              onPressed: controller.isLoading
+                                  ? null
+                                  : () async {
+                                      if (_formKey.currentState!.validate()) {
+                                        final success =
+                                            await controller.login(
+                                          _emailController.text,
+                                          _passwordController.text,
+                                        );
+                                        if (success) {
+                                          Get.offNamed('/home');
+                                        }
+                                      }
+                                    },
+                              child: controller.isLoading
+                                  ? const CircularProgressIndicator()
+                                  : const Text(
+                                      'Login',
+                                      style: TextStyle(fontSize: 18),
+                                    ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),

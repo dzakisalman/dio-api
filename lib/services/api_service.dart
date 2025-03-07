@@ -6,9 +6,9 @@ class ApiService {
   final Dio _dio = Dio();
   final String baseUrl = 'https://reqres.in/api';
 
-  Future<UserResponse> fetchUsers() async {
+  Future<UserResponse> fetchUsers({int page = 1}) async {
     try {
-      final response = await _dio.get('$baseUrl/users?page=1');
+      final response = await _dio.get('$baseUrl/users', queryParameters: {'page': page});
       if (response.statusCode == 200) {
         return UserResponse.fromJson(response.data);
       } else {

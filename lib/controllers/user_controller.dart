@@ -1,6 +1,7 @@
 import 'package:dio_api/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:filter_list/filter_list.dart';
 
 import '../models/user_model.dart';
 import '../services/api_service.dart';
@@ -9,6 +10,9 @@ class UserController extends GetxController {
   List<User> users = [];
   List<User> filteredUsers = [];
   bool isLoading = false;
+  bool isLoadingMore = false;
+  int currentPage = 1;
+  bool hasMoreData = true;
 
   @override
   void onInit() {
@@ -16,21 +20,63 @@ class UserController extends GetxController {
     fetchUsers();
   }
 
+  void reset() {
+    users = [];
+    filteredUsers = [];
+    isLoading = false;
+    isLoadingMore = false;
+    currentPage = 1;
+    hasMoreData = true;
+    update();
+    fetchUsers(); // Fetch first page after reset
+  }
+
   Future<void> fetchUsers() async {
+    if (isLoading) return;
+    
     isLoading = true;
+    currentPage = 1; // Reset to page 1
     update();
 
     try {
-      final userResponse = await ApiService().fetchUsers();
-      if (userResponse.data != null) {
-        users = userResponse.data;
+      final userResponse = await ApiService().fetchUsers(page: currentPage);
+      if (userResponse.data.isNotEmpty) {
+        users = userResponse.data; // Replace existing data with page 1
         _updateFilteredUsers();
-        update();
       }
+      // Check if we have more pages
+      hasMoreData = userResponse.totalPages > currentPage;
+      update();
     } catch (e) {
       Get.snackbar('Error', 'Failed to load users: $e');
     } finally {
       isLoading = false;
+      update();
+    }
+  }
+
+  Future<void> loadMore() async {
+    if (isLoadingMore || !hasMoreData) return;
+
+    isLoadingMore = true;
+    update();
+    
+    final nextPage = currentPage + 1;
+
+    try {
+      final userResponse = await ApiService().fetchUsers(page: nextPage);
+      if (userResponse.data.isNotEmpty) {
+        users.addAll(userResponse.data); // Add new data to existing list
+        _updateFilteredUsers();
+        currentPage = nextPage; // Update page number only after successful load
+      }
+      // Check if we have more pages
+      hasMoreData = userResponse.totalPages > currentPage;
+      update();
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to load more users: $e');
+    } finally {
+      isLoadingMore = false;
       update();
     }
   }
@@ -40,10 +86,8 @@ class UserController extends GetxController {
       _updateFilteredUsers();
     } else {
       filteredUsers = users.where((user) {
-        return (user.firstName?.toLowerCase().contains(query.toLowerCase()) ??
-                false) ||
-            (user.lastName?.toLowerCase().contains(query.toLowerCase()) ??
-                false);
+        return (user.firstName.toLowerCase().contains(query.toLowerCase()) ||
+            user.lastName.toLowerCase().contains(query.toLowerCase()));
       }).toList();
     }
     update();
@@ -58,7 +102,6 @@ class UserController extends GetxController {
       if (newUser != null) {
         users.add(newUser);
         _updateFilteredUsers();
-        update();
         Get.back();
         Get.snackbar(
           'Success',
@@ -87,13 +130,11 @@ class UserController extends GetxController {
     update();
 
     try {
-      final updatedUser =
-          await ApiService().updateUser(id, firstName, lastName);
+      final updatedUser = await ApiService().updateUser(id, firstName, lastName);
       final index = users.indexWhere((user) => user.id == id);
       if (index != -1) {
         users[index] = updatedUser;
         _updateFilteredUsers();
-        update();
         Get.back();
         Get.snackbar(
           'Success',
@@ -125,7 +166,6 @@ class UserController extends GetxController {
       await ApiService().deleteUser(id);
       users.removeWhere((user) => user.id == id);
       _updateFilteredUsers();
-      update();
     } catch (e) {
       Get.snackbar('Error', 'Failed to delete user');
     } finally {
@@ -189,9 +229,11 @@ class UserController extends GetxController {
                     const SizedBox(height: 10),
                     TextField(
                       controller: searchController,
+                      style: TextStyle(color: AppColors.textPrimary),
                       onChanged: filterSearch,
                       decoration: InputDecoration(
                         hintText: "Search user...",
+                        hintStyle: TextStyle(color: AppColors.textSecondary),
                         prefixIcon: Icon(Icons.search, color: AppColors.accent),
                         filled: true,
                         fillColor: AppColors.surface.withOpacity(0.2),
@@ -304,5 +346,6 @@ class UserController extends GetxController {
 
   void _updateFilteredUsers() {
     filteredUsers = List.from(users);
+    update();
   }
 }

@@ -52,18 +52,38 @@ class User {
 
 class UserResponse {
   final List<User> data;
+  final int page;
+  final int perPage;
+  final int total;
+  final int totalPages;
 
-  UserResponse({required this.data});
+  UserResponse({
+    required this.data,
+    required this.page,
+    required this.perPage,
+    required this.total,
+    required this.totalPages,
+  });
 
   factory UserResponse.fromJson(Map<String, dynamic> json) {
     var list = json['data'] as List? ?? [];
     List<User> userList = list.map((i) => User.fromJson(i)).toList();
-    return UserResponse(data: userList);
+    return UserResponse(
+      data: userList,
+      page: json['page'] ?? 1,
+      perPage: json['per_page'] ?? 6,
+      total: json['total'] ?? 0,
+      totalPages: json['total_pages'] ?? 1,
+    );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'data': data.map((user) => user.toJson()).toList(),
+      'page': page,
+      'per_page': perPage,
+      'total': total,
+      'total_pages': totalPages,
     };
   }
 }
