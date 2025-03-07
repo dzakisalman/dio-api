@@ -18,7 +18,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   final AuthController _authController = Get.find<AuthController>();
 
-  // Variabel untuk mengelola visibilitas password
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
 
@@ -33,7 +32,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background, // Warna latar belakang
+      backgroundColor: AppColors.background,
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
