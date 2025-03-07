@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
 import '../app_colors.dart'; // Import AppColors
 
@@ -14,6 +14,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final AuthController _authController = Get.find<AuthController>();
 
   // Variabel untuk mengelola visibilitas password
   bool _isPasswordVisible = false;
@@ -66,10 +67,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 // Form
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.8), // Efek transparan
-                    borderRadius: BorderRadius.circular(12),
+                    color: AppColors.surface.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppColors.surface.withOpacity(0.3)),
                   ),
                   child: Form(
                     key: _formKey,
@@ -132,71 +134,50 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                         const SizedBox(height: 16),
-                        Consumer<AuthController>(
-                          builder: (context, authController, child) {
-                            return SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.secondary,
-                                  foregroundColor: AppColors.textPrimary,
-                                  padding: const EdgeInsets.all(14),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                onPressed: authController.isLoading
-                                    ? null
-                                    : () async {
-                                  if (_formKey.currentState!.validate()) {
-                                    final success = await authController.login(
-                                      _emailController.text,
-                                      _passwordController.text,
-                                    );
-                                    if (success && mounted) {
-                                      Navigator.pushReplacementNamed(context, '/home');
-                                    }
-                                  }
-                                },
-                                child: authController.isLoading
-                                    ? const CircularProgressIndicator()
-                                    : const Text(
-                                  'Login',
-                                  style: TextStyle(fontSize: 18),
-                                ),
+                        Obx(() => SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.secondary,
+                              foregroundColor: AppColors.textPrimary,
+                              padding: const EdgeInsets.all(14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                            );
-                          },
-                        ),
+                            ),
+                            onPressed: _authController.isLoading
+                                ? null
+                                : () async {
+                              if (_formKey.currentState!.validate()) {
+                                final success = await _authController.login(
+                                  _emailController.text,
+                                  _passwordController.text,
+                                );
+                                if (success) {
+                                  Get.offNamed('/home');
+                                }
+                              }
+                            },
+                            child: _authController.isLoading
+                                ? const CircularProgressIndicator()
+                                : const Text(
+                              'Login',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ),
+                        )),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // TextButton(
-                    //   onPressed: () {
-                    //   },
-                    //   child: Text(
-                    //     "Forgot Password?",
-                    //     style: TextStyle(color: AppColors.accent),
-                    //   ),
-                    // ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/register');
-                      },
-                      child: Text(
-                        "Sign Up",
-                        style: TextStyle(color: AppColors.accent),
-                      ),
-                    ),
-                  ],
+                TextButton(
+                  onPressed: () => Get.toNamed('/register'),
+                  child: Text(
+                    'Don\'t have an account? Register',
+                    style: TextStyle(color: AppColors.accent),
+                  ),
                 ),
-                const SizedBox(height: 30),
               ],
             ),
           ),

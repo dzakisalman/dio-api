@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
 import '../app_colors.dart'; // Import AppColors
 
@@ -15,6 +15,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final AuthController _authController = Get.find<AuthController>();
 
   // Variabel untuk mengelola visibilitas password
   bool _isPasswordVisible = false;
@@ -69,10 +70,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 // Form Registrasi
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(12),
+                    color: AppColors.surface.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppColors.surface.withOpacity(0.3)),
                   ),
                   child: Form(
                     key: _formKey,
@@ -140,7 +142,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           obscureText: !_isConfirmPasswordVisible,
                           decoration: InputDecoration(
                             labelText: 'Confirm Password',
-                            prefixIcon: Icon(Icons.lock_outline, color: AppColors.accent),
+                            prefixIcon: Icon(Icons.lock, color: AppColors.accent),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
@@ -172,42 +174,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           },
                         ),
                         const SizedBox(height: 16),
-                        Consumer<AuthController>(
-                          builder: (context, authController, child) {
-                            return SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.secondary,
-                                  foregroundColor: AppColors.textPrimary,
-                                  padding: const EdgeInsets.all(14),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                onPressed: authController.isLoading
-                                    ? null
-                                    : () async {
-                                  if (_formKey.currentState!.validate()) {
-                                    final success = await authController.register(
-                                      _emailController.text,
-                                      _passwordController.text,
-                                    );
-                                    if (success && mounted) {
-                                      Navigator.pushReplacementNamed(context, '/login');
-                                    }
-                                  }
-                                },
-                                child: authController.isLoading
-                                    ? const CircularProgressIndicator()
-                                    : const Text(
-                                  'Register',
-                                  style: TextStyle(fontSize: 18),
-                                ),
+                        Obx(() => SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.secondary,
+                              foregroundColor: AppColors.textPrimary,
+                              padding: const EdgeInsets.all(14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                            );
-                          },
-                        ),
+                            ),
+                            onPressed: _authController.isLoading
+                                ? null
+                                : () async {
+                              if (_formKey.currentState!.validate()) {
+                                final success = await _authController.register(
+                                  _emailController.text,
+                                  _passwordController.text,
+                                );
+                                if (success) {
+                                  Get.offNamed('/login');
+                                }
+                              }
+                            },
+                            child: _authController.isLoading
+                                ? const CircularProgressIndicator()
+                                : const Text(
+                              'Register',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ),
+                        )),
                       ],
                     ),
                   ),
@@ -215,23 +213,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 16),
 
                 // Sudah punya akun? Login
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Already have an account?",
-                      style: TextStyle(color: AppColors.textSecondary),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushReplacementNamed(context, '/login');
-                      },
-                      child: Text(
-                        "Login",
-                        style: TextStyle(color: AppColors.accent),
-                      ),
-                    ),
-                  ],
+                TextButton(
+                  onPressed: () => Get.back(),
+                  child: Text(
+                    'Already have an account? Login',
+                    style: TextStyle(color: AppColors.accent),
+                  ),
                 ),
                 const SizedBox(height: 30),
               ],

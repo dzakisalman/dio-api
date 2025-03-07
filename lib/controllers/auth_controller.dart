@@ -1,52 +1,45 @@
-import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../services/auth_service.dart';
 
-class AuthController extends ChangeNotifier {
+class AuthController extends GetxController {
   final AuthService _authService = AuthService();
-  bool _isLoading = false;
-  String? _error;
+  final _isLoading = false.obs;
+  final _error = Rxn<String>();
 
-  bool get isLoading => _isLoading;
-  String? get error => _error;
+  bool get isLoading => _isLoading.value;
+  String? get error => _error.value;
 
   Future<bool> login(String email, String password) async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
+    _isLoading.value = true;
+    _error.value = null;
 
     try {
       final response = await _authService.login(email, password);
-      _isLoading = false;
-      notifyListeners();
+      _isLoading.value = false;
       return true;
     } catch (e) {
-      _error = e.toString();
-      _isLoading = false;
-      notifyListeners();
+      _error.value = e.toString();
+      _isLoading.value = false;
       return false;
     }
   }
 
   Future<bool> register(String email, String password) async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
+    _isLoading.value = true;
+    _error.value = null;
 
     try {
       final response = await _authService.register(email, password);
-      _isLoading = false;
-      notifyListeners();
+      _isLoading.value = false;
       return true;
     } catch (e) {
-      _error = e.toString();
-      _isLoading = false;
-      notifyListeners();
+      _error.value = e.toString();
+      _isLoading.value = false;
       return false;
     }
   }
 
   void clearError() {
-    _error = null;
-    notifyListeners();
+    _error.value = null;
   }
 } 

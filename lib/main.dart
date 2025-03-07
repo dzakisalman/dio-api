@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
 
 import 'controllers/user_controller.dart';
 import 'controllers/auth_controller.dart';
@@ -9,14 +8,7 @@ import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 
 void main() {
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthController()),
-      ],
-      child: MyApp(),
-    ),
-  );
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -24,7 +16,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      initialBinding: UserBinding(),
+      initialBinding: BindingsBuilder(() {
+        Get.put(AuthController());
+        Get.put(UserController());
+      }),
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -36,13 +31,5 @@ class MyApp extends StatelessWidget {
       ],
       initialRoute: '/login',
     );
-  }
-}
-
-class UserBinding extends Bindings {
-  @override
-  void dependencies() {
-    Get.lazyPut(() => UserController());
-    Get.put(UserController());
   }
 }
